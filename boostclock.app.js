@@ -91,9 +91,11 @@
       }
       drawTick(radius, startAngle + step*i, length);
   };
-  const drawCircle = function () {
+  const drawGauge = function() {
     g.setColor('#FFFFFF');
     g.drawImage(require("Storage").read("boostclock.gauge.img"), 12, 12);
+  };
+  const drawTicks = function () {
     g.setColor(settings.tick.startColor);
     for (i = 0; i < ticksToDraw; i++){
       if (i < 36) {
@@ -103,7 +105,6 @@
         drawTickIndex(i, settings.tick.topColor);
       }
     }
-    //g.fillCircle(settings.circle.middle, settings.circle.center, screen.middle-20);
   };
 
   var lastTickLevel = maxQuantity;
@@ -137,6 +138,7 @@
             ("0"+d.getMinutes()).substr(-2);
     if (t != lastTime){
 
+      drawGauge();
       if (typeof locale.meridian === "function") {
         meridian = locale.meridian(d);
       } else {
@@ -164,11 +166,7 @@
 
   // manage when things should be enabled and not
   Bangle.on('lcdPower', function (on) {
-    if (on) {
-      Bangle.setHRMPower(1, "boostclock");
-    } else {
-      Bangle.setHRMPower(0, "boostclock");
-    }
+      Bangle.setHRMPower(on, "boostclock");
   });
 
   // clean app screen
@@ -187,8 +185,8 @@
   });
 
   // draw now
-  drawCircle();
   drawClock();
+  drawTicks();
 
   // Show launcher when middle button pressed
   setWatch(Bangle.showLauncher, BTN2, { repeat: false, edge: "falling" });
